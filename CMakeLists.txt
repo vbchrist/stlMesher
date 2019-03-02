@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.10)
+set(DCGAL_DIR $HOME/CGAL-4.13)
+find_package(CGAL)
+find_package( Boost 1.65.1 COMPONENTS program_options REQUIRED )
+include_directories( ${Boost_INCLUDE_DIR} )
+add_executable(stlRefine stlRefine.cpp)
+target_link_libraries(stlRefine CGAL::CGAL ${Boost_LIBRARIES})
