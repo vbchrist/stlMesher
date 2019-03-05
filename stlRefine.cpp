@@ -33,11 +33,9 @@ int main(int argc, char *argv[])
   std::vector<CGAL::cpp11::array<int, 3>> triangles;
 
   CGAL::read_STL(input, points, triangles);
-
-  Mesh m;
-
   if (CGAL::Polygon_mesh_processing::is_polygon_soup_a_polygon_mesh(triangles))
   {
+    Mesh m;
     CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(points, triangles, m);
     if (!m.is_valid() || m.is_empty())
     {
@@ -47,9 +45,19 @@ int main(int argc, char *argv[])
     }
     else
     {
-      std::cout << "Mesh sucessfully read.\n";
+      std::cout << "Surface mesh sucessfully read.\n";
       std::cout << "  Points: " << points.size() << "\n";
       std::cout << "  Triangles: " << triangles.size() << "\n";
+      std::cout << "  Surface area: " << CGAL::Polygon_mesh_processing::area(m) << "\n";
+      if (CGAL::is_closed(m))
+      {
+        std::cout << "  Mesh is closed and bounds a volume.\n";
+        std::cout << "  Bound volume: " << CGAL::Polygon_mesh_processing::volume(m) << "\n";
+      }
+      else
+      {
+        std::cout << "  Mesh is not closed.\n";
+      }
     }
 
     double target_edge_length = prog_args.get_edge_length();
@@ -70,10 +78,14 @@ int main(int argc, char *argv[])
         m,
         CGAL::Polygon_mesh_processing::parameters::number_of_iterations(nb_iter)
             .protect_constraints(true)
-            .edge_is_constrained_map(eif)
-            );
+            .edge_is_constrained_map(eif));
 
-    std::cout << "Remeshing somplete.\n";
+    std::cout << "Remeshing complete.\n";
+    std::cout << "  Surface area: " << CGAL::Polygon_mesh_processing::area(m) << "\n";
+    if (CGAL::is_closed(m))
+    {
+      std::cout << "  Bound volume: " << CGAL::Polygon_mesh_processing::volume(m) << "\n";
+    }
 
     std::cout << "Writing new mesh to " << prog_args.get_output_file() << "\n";
     std::ofstream outfile(prog_args.get_output_file());

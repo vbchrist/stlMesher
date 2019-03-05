@@ -62,11 +62,11 @@ class prog_inputs
             // Dihedral angle
             if (vm.count("angle"))
             {
-                std::cout << "Dihedral angle (degrees) between facets: " << vm["angle"].as<double>() << "\n";
+                std::cout << "Dihedral angle in degrees: " << vm["angle"].as<double>() << "\n";
             }
             else
             {
-                std::cout << "Dihedral angle in degrees between facets: " << dihedral_angle << " <default>\n";
+                std::cout << "Dihedral angle in degrees: " << dihedral_angle << " <default>\n";
             }
 
             if (input_error == true)

@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}",
-                "$HOME/CGAL-4.13/include"
+                "/home/ch816772/CGAL-4.13/include",
+                "/home/chris/CGAL-4.13/include"
             ],
             "defines": [
                 "_DEBUG",
@@ -14,7 +15,8 @@
             "browse": {
                 "path": [
                     "${workspaceFolder}",
-                    "$HOME/CGAL-4.13/include"
+                    "/home/ch816772/CGAL-4.13/include",
+                    "/home/chris/CGAL-4.13/include"
                 ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""
