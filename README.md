@@ -2,6 +2,9 @@
 
 Installation:
 
+Download source code.
+git clone https://github.com/vbchrist/stlMesher.git
+
 Install required packages:
 
 Install cmake 3.10 or later.
