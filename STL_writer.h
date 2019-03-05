@@ -85,11 +85,11 @@ write_STL(const TriangleMesh &tm, std::ostream &out)
             Vector_3 n = collinear(p, q, r) ? Vector_3(1, 0, 0) : unit_normal(p, q, r);
 
             out << "facet normal " << n << "\n";
-            out << "outer loop\n";
-            out << "vertex " << p << "\n";
-            out << "vertex " << q << "\n";
-            out << "vertex " << r << "\n";
-            out << "endloop\n";
+            out << "    outer loop\n";
+            out << "        vertex " << p << "\n";
+            out << "        vertex " << q << "\n";
+            out << "        vertex " << r << "\n";
+            out << "    endloop\n";
             out << "endfacet\n";
         }
         out << "endsolid surface\n";

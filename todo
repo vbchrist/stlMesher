@@ -1,0 +1,40 @@
+
+Function generate_internal_surface(actor, enviroment)
+    Loop
+        Move actor  
+        Generate new point ring
+        Construct new polys
+        Mod actor orientation
+    End Loop    
+Return surface
+
+
+
+Class Actor 
+Method
+    void modify orientation(NN args)
+    bool advance()
+        <collision detection>
+Objects
+    point               position 
+    point               orientation (unit)
+    vec<point>          pattern of 2D
+
+
+
+Struct ring
+Method
+    construct (position, orientation, NN args)
+Objects
+    point[] array of points
+
+
+
+Class Enviroment
+Methods 
+    Build from surface_mesh 
+    Add internal geometry
+        Mesh intersection detection
+Objects
+    surface_mesh        external surface
+    vec<surface_mesh>   list of internal objects defined by surface meshes
