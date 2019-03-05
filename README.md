@@ -9,12 +9,15 @@ git clone https://github.com/vbchrist/stlMesher.git
 Install required packages:
 
 Install cmake 3.10 or later.
+
 sudo apt install cmake
 
 Download CGAL-4.13 or later.
+
 https://github.com/CGAL/cgal/releases
 
 Extract and build CGAL
+
 tar xf {path to download}/CGAL-4.13.tar.xz
 cd CGAL-4.13
 cmake .
