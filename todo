@@ -22,7 +22,7 @@ Objects
 
 
 
-Struct ring
+Struct Ring
 Method
     construct (position, orientation, NN args)
 Objects

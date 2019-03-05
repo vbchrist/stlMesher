@@ -27,8 +27,7 @@ int main(int argc, char *argv[])
     return 0;
   };
 
-
-  std::cout << "Reading mesh from " << prog_args.get_input_file() << "\n";
+  std::cout << "\nReading mesh from " << prog_args.get_input_file() << "\n";
   std::ifstream input(prog_args.get_input_file(), std::ios::binary);
   std::vector<CGAL::cpp11::array<double, 3>> points;
   std::vector<CGAL::cpp11::array<int, 3>> triangles;
@@ -48,32 +47,34 @@ int main(int argc, char *argv[])
     }
     else
     {
-      std::cout << "it is a polygon mesh\n";
-      std::cout << "Points: " << points.size() << "\n";
-      std::cout << "Triangles: " << triangles.size() << "\n";
+      std::cout << "Mesh sucessfully read.\n";
+      std::cout << "  Points: " << points.size() << "\n";
+      std::cout << "  Triangles: " << triangles.size() << "\n";
     }
 
     double target_edge_length = prog_args.get_edge_length();
-    double angle = prog_args.get_dihedral_angle();
+    double angle_in_deg = prog_args.get_dihedral_angle();
     unsigned int nb_iter = 20;
     boost::property_map<Mesh, CGAL::edge_is_feature_t>::type eif = get(CGAL::edge_is_feature, m);
 
     CGAL::Polygon_mesh_processing::detect_sharp_edges(
         m,
-        angle,
-        eif        
-        );
+        angle_in_deg,
+        eif);
+
+    std::cout << "\nRemeshing with a target dihedral angle of " << angle_in_deg << " degrees and edge length of " << target_edge_length << "\n";
 
     CGAL::Polygon_mesh_processing::isotropic_remeshing(
         faces(m),
         target_edge_length,
         m,
         CGAL::Polygon_mesh_processing::parameters::number_of_iterations(nb_iter)
+            .protect_constraints(true)
             .edge_is_constrained_map(eif)
-        );
+            );
 
-    std::cout << "Remeshing done.\n";
-    
+    std::cout << "Remeshing somplete.\n";
+
     std::cout << "Writing new mesh to " << prog_args.get_output_file() << "\n";
     std::ofstream outfile(prog_args.get_output_file());
     CGAL::write_STL(m, outfile);

@@ -49,8 +49,9 @@ class prog_inputs
 
             // Edge length
             if (vm.count("length"))
-            {
-                std::cout << "Target edge length: " << vm["length"].as<double>() << "\n";
+            { 
+                edge_length = vm["length"].as<double>();
+                std::cout << "Target edge length: " << edge_length << "\n";               
             }
             else
             {
@@ -65,7 +66,7 @@ class prog_inputs
             }
             else
             {
-                std::cout << "Dihedral angle (degrees) between facets: " << dihedral_angle << " <default>\n";
+                std::cout << "Dihedral angle in degrees between facets: " << dihedral_angle << " <default>\n";
             }
 
             if (input_error == true)
@@ -83,8 +84,9 @@ class prog_inputs
 
   private:
     bool input_error = false;
-    double edge_length = 0.0;
+    double edge_length;
     double dihedral_angle = 5.;
     std::string input_file;
     std::string output_file;
+
 };
