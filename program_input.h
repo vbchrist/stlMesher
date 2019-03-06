@@ -13,10 +13,12 @@ class prog_inputs
         namespace po = boost::program_options;
         po::options_description description("Usage: stlRefine [OPTIONS] input_file.stl output_file.stl\n\nOptions");
         description.add_options()
-            ("help,h", "Display help menu.")
-            ("version,v", "Display program version number")
-            ("length,l", po::value<double>(), "Mesh target edge length.")
             ("angle,a", po::value<double>(), "Minimum dihedral angle between facets sharing used for edge detection.")
+            ("help,h", "Display help menu.")
+            ("length,l", po::value<double>(), "Mesh target edge length.")
+            ("scale,s", po::value<double>(), "Mesh scale factor.")
+            ("translate,t", po::value<double>(), "Translate mesh by vector. Format: -t (X Y Z)")
+            ("version,v", "Display program version number")
             ("input-files", po::value<std::vector<std::string>>(), "Requires two files input_file.stl output_file.stl");
 
         po::positional_options_description p;
@@ -62,11 +64,23 @@ class prog_inputs
             // Dihedral angle
             if (vm.count("angle"))
             {
-                std::cout << "Dihedral angle in degrees: " << vm["angle"].as<double>() << "\n";
+                dihedral_angle = vm["angle"].as<double>();
+                std::cout << "Dihedral angle in degrees: " << dihedral_angle << "\n";
             }
             else
             {
                 std::cout << "Dihedral angle in degrees: " << dihedral_angle << " <default>\n";
+            }
+
+            // Scale
+            if (vm.count("scale"))
+            {
+                scale = vm["scale"].as<double>();
+                std::cout << "Scale factor: " << scale << "\n";
+            }
+            else
+            {
+                std::cout << "Scale factor: " << scale << " <default>\n";
             }
 
             if (input_error == true)
@@ -80,12 +94,14 @@ class prog_inputs
     std::string get_output_file() { return output_file; };
     double get_edge_length() { return edge_length; };
     double get_dihedral_angle() { return dihedral_angle; };
+    double get_scale() { return scale; };
     bool is_err() { return input_error; };
 
   private:
     bool input_error = false;
     double edge_length;
     double dihedral_angle = 5.;
+    double scale = 1.;
     std::string input_file;
     std::string output_file;
 

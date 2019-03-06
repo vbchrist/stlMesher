@@ -11,6 +11,9 @@
 #include <CGAL/Polygon_mesh_processing/detect_features.h>
 #include <CGAL/Polygon_mesh_processing/remesh.h>
 
+#include <CGAL/Polygon_mesh_processing/transform.h>
+#include <CGAL/Polygon_mesh_processing/bbox.h>
+
 // local
 #include "program_input.h"
 #include "STL_writer.h"
@@ -36,6 +39,8 @@ int main(int argc, char *argv[])
   if (CGAL::Polygon_mesh_processing::is_polygon_soup_a_polygon_mesh(triangles))
   {
     Mesh m;
+    double surface_area_orig = 0., volume_orig = 0.,  surface_area_new = 0.,  volume_new = 0.;
+
     CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(points, triangles, m);
     if (!m.is_valid() || m.is_empty())
     {
@@ -45,20 +50,32 @@ int main(int argc, char *argv[])
     }
     else
     {
+      surface_area_orig = CGAL::Polygon_mesh_processing::area(m);
+      volume_orig = CGAL::Polygon_mesh_processing::volume(m);
+
       std::cout << "Surface mesh sucessfully read.\n";
       std::cout << "  Points: " << points.size() << "\n";
       std::cout << "  Triangles: " << triangles.size() << "\n";
-      std::cout << "  Surface area: " << CGAL::Polygon_mesh_processing::area(m) << "\n";
+      std::cout << "  Surface area: " << surface_area_orig << "\n";
       if (CGAL::is_closed(m))
       {
         std::cout << "  Mesh is closed and bounds a volume.\n";
-        std::cout << "  Bound volume: " << CGAL::Polygon_mesh_processing::volume(m) << "\n";
+        std::cout << "  Bound volume: " << volume_orig << "\n";
+        std::cout << "  Bounding box [" << CGAL::Polygon_mesh_processing::bbox(m) << "]\n";
       }
       else
       {
         std::cout << "  Mesh is not closed.\n";
       }
     }
+
+
+    //CGAL::Polygon_mesh_processing::transform(Kernel::Aff_transformation_3(CGAL::TRANSLATION, Kernel::Vector_3(1000,0,0)), m);
+    if(prog_args.get_scale() != 1.){
+      std::cout << "\nScaling mesh by a factor of " << prog_args.get_scale() << "\n";
+      CGAL::Polygon_mesh_processing::transform(Kernel::Aff_transformation_3(CGAL::SCALING, prog_args.get_scale()), m);   
+    } 
+ 
 
     double target_edge_length = prog_args.get_edge_length();
     double angle_in_deg = prog_args.get_dihedral_angle();
@@ -68,7 +85,8 @@ int main(int argc, char *argv[])
     CGAL::Polygon_mesh_processing::detect_sharp_edges(
         m,
         angle_in_deg,
-        eif);
+        eif
+        );
 
     std::cout << "\nRemeshing with a target dihedral angle of " << angle_in_deg << " degrees and edge length of " << target_edge_length << "\n";
 
@@ -78,16 +96,24 @@ int main(int argc, char *argv[])
         m,
         CGAL::Polygon_mesh_processing::parameters::number_of_iterations(nb_iter)
             .protect_constraints(true)
-            .edge_is_constrained_map(eif));
+            .edge_is_constrained_map(eif)
+        );
 
     std::cout << "Remeshing complete.\n";
-    std::cout << "  Surface area: " << CGAL::Polygon_mesh_processing::area(m) << "\n";
+   
+    surface_area_new = CGAL::Polygon_mesh_processing::area(m);
+    volume_new = CGAL::Polygon_mesh_processing::volume(m);
+    double area_err_pc = (surface_area_new/pow(prog_args.get_scale(),2.) - surface_area_orig)/surface_area_orig*100;
+    double volume_err_pc = (volume_new/pow(prog_args.get_scale(),3.) - volume_orig)/volume_orig*100;
+
+    std::cout << "  Surface area: " << surface_area_new << "    Error " << area_err_pc << "% \n";
     if (CGAL::is_closed(m))
     {
-      std::cout << "  Bound volume: " << CGAL::Polygon_mesh_processing::volume(m) << "\n";
+      std::cout << "  Bound volume: " << volume_new << "    Error " << volume_err_pc << "% \n";
+      std::cout << "  Bounding box [" << CGAL::Polygon_mesh_processing::bbox(m) << "]\n";
     }
 
-    std::cout << "Writing new mesh to " << prog_args.get_output_file() << "\n";
+    std::cout << "\nWriting new mesh to " << prog_args.get_output_file() << "\n";
     std::ofstream outfile(prog_args.get_output_file());
     CGAL::write_STL(m, outfile);
     outfile.close();
